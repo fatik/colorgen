@@ -4,982 +4,508 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Color Gen for DS</title>
-    <style>
-        :root {
-            --border-color: #e2e8f0;
-            --bg-gray: #f7f7f7;
-        }
-
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
-
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
-            background: #f8fafc;
-            line-height: 1.5;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .header {
-            position: sticky;
-            top: 0;
-            background: white;
-            border-bottom: 1px solid var(--border-color);
-            padding: 1rem;
-            z-index: 10;
-        }
-
-        .footer {
-            position: sticky;
-            bottom: 0;
-            background: white;
-            border-top: 1px solid var(--border-color);
-            padding: 1rem;
-            z-index: 10;
-        }
-
-        .main-content {
-            flex: 1;
-            padding: 1rem;
-            width: 100%;
-        }
-
-        .color-input-section {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            max-width: 64rem;
-            margin: 0 auto;
-            width: 100%;
-        }
-
-        .input-group {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-        }
-
-        .color-input-container {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .input {
-            width: 12rem;
-            padding: 0.75rem;
-            border: 1px solid var(--border-color);
-            border-radius: 0.375rem;
-            font-size: 0.875rem;
-            font-family: ui-monospace, monospace;
-        }
-
-        .controls-group {
-            display: flex;
-            align-items: center;
-            gap: 1rem;
-        }
-
-        .lock-control {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            font-size: 0.875rem;
-            color: #64748b;
-            cursor: pointer;
-        }
-
-        .lock-control:hover {
-            color: #1e293b;
-        }
-
-        .lock-control input[type="checkbox"] {
-            cursor: pointer;
-        }
-
-        .reset-all-button {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            padding: 0.5rem 0.75rem;
-            border: 1px solid var(--border-color);
-            background: white;
-            border-radius: 0.375rem;
-            cursor: pointer;
-            font-size: 0.875rem;
-            color: #64748b;
-            transition: all 0.2s;
-        }
-
-        .reset-all-button:hover {
-            background: #f8fafc;
-            color: #1e293b;
-        }
-
-        .reset-all-button svg {
-            width: 1rem;
-            height: 1rem;
-        }
-
-        .shades-section {
-            max-width: 64rem;
-            margin: 0 auto;
-            background: white;
-            border-radius: 0.5rem;
-            padding: 1rem;
-            box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.1);
-        }
-
-        .control-section {
-            max-width: 64rem;
-            margin: 0 auto;
-            display: grid;
-            grid-template-columns: 1fr;
-            gap: 1rem;
-            width: 100%;
-        }
-
-        @media (min-width: 1024px) {
-            .control-section {
-                grid-template-columns: repeat(3, minmax(0, 1fr));
-                gap: 2rem;
-            }
-        }
-
-        .control-group {
-            padding: 1.5rem;
-            border: 1px solid var(--border-color);
-            border-radius: 0.5rem;
-            background: white;
-        }
-
-        .control-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 1rem;
-        }
-
-        .control-title {
-            font-size: 0.875rem;
-            font-weight: 600;
-            color: #1a1a1a;
-        }
-
-        .slider {
-            width: 200px;
-            margin: 0;
-            -webkit-appearance: none;
-            appearance: none;
-            height: 6px;
-            background: var(--bg-gray);
-            border-radius: 3px;
-            outline: none;
-        }
-
-        .slider::-webkit-slider-thumb {
-            -webkit-appearance: none;
-            appearance: none;
-            width: 16px;
-            height: 16px;
-            background: #2563eb;
-            border-radius: 50%;
-            cursor: pointer;
-            border: 2px solid white;
-            box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.1);
-        }
-
-        .slider::-moz-range-thumb {
-            width: 16px;
-            height: 16px;
-            background: #2563eb;
-            border-radius: 50%;
-            cursor: pointer;
-            border: 2px solid white;
-            box-shadow: 0 0 0 1px rgba(0, 0, 0, 0.1);
-        }
-
-        .slider-container {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            margin-bottom: 1rem;
-        }
-
-        .slider-container label {
-            font-size: 0.875rem;
-            color: #4b5563;
-            min-width: 100px;
-        }
-
-        .meter {
-            height: 2rem;
-            background: var(--bg-gray);
-            border-radius: 0.375rem;
-            position: relative;
-            overflow: hidden;
-            margin-top: 1rem;
-        }
-
-        .meter-line {
-            position: absolute;
-            top: 0;
-            width: 1px;
-            height: 100%;
-            background: #94a3b8;
-            opacity: 0.5;
-            transform: translateX(-50%);
-        }
-
-        .meter-center {
-            position: absolute;
-            left: 50%;
-            top: 0;
-            width: 1px;
-            height: 100%;
-            background: #ef4444;
-            transform: translateX(-50%);
-        }
-
-        .reset-button {
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-            padding: 0.5rem 0.75rem;
-            border: 1px solid var(--border-color);
-            background: white;
-            border-radius: 0.375rem;
-            cursor: pointer;
-            font-size: 0.75rem;
-            color: #64748b;
-            transition: all 0.2s;
-        }
-
-        .reset-button:hover {
-            background: #f8fafc;
-            color: #1e293b;
-        }
-
-        .reset-button svg {
-            width: 1rem;
-            height: 1rem;
-        }
-
-        .color-picker {
-            width: 3.5rem;
-            height: 3.5rem;
-            padding: 0.25rem;
-            border: 1px solid var(--border-color);
-            border-radius: 0.375rem;
-            cursor: pointer;
-        }
-
-        .stop-count-control {
-            background: white;
-            padding: 0.5rem;
-            border-radius: 0.375rem;
-            border: 1px solid var(--border-color);
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }
-
-        .stop-button {
-            padding: 0.5rem;
-            border: 1px solid var(--border-color);
-            background: white;
-            border-radius: 0.375rem;
-            cursor: pointer;
-            width: 2rem;
-            height: 2rem;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-size: 1rem;
-            color: #64748b;
-        }
-
-        .stop-button:hover:not(:disabled) {
-            background: #f8fafc;
-            color: #1e293b;
-        }
-
-        .stop-button:disabled {
-            opacity: 0.5;
-            cursor: not-allowed;
-        }
-
-        .stop-count {
-            font-size: 0.875rem;
-            font-weight: 500;
-            color: #1e293b;
-            min-width: 2rem;
-            text-align: center;
-        }
-
-        .flex-1 {
-            flex: 1;
-        }
-
-        .shades {
-            display: flex;
-            gap: 0.25rem;
-        }
-
-        .shade {
-            flex: 1;
-            border-radius: 0.375rem;
-            overflow: hidden;
-            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
-            transition: transform 0.2s;
-        }
-
-        .shade:hover {
-            transform: translateY(-2px);
-        }
-
-        .shade-color {
-            height: 6rem;
-            cursor: pointer;
-            position: relative;
-        }
-
-        .copy-overlay {
-            position: absolute;
-            inset: 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            background: rgba(0, 0, 0, 0.1);
-            opacity: 0;
-            transition: opacity 0.2s;
-        }
-
-        .shade-color:hover .copy-overlay {
-            opacity: 1;
-        }
-
-        .copy-overlay svg {
-            width: 1.25rem;
-            height: 1.25rem;
-            color: white;
-        }
-
-        .shade-info {
-            padding: 0.75rem;
-            text-align: center;
-            background: white;
-        }
-
-        .shade-number {
-            font-weight: 600;
-            font-size: 0.875rem;
-            color: #1e293b;
-        }
-
-        .shade-hex {
-            font-size: 0.75rem;
-            color: #64748b;
-            font-family: ui-monospace, monospace;
-            margin-top: 0.25rem;
-            word-break: break-all;
-        }
-
-        .base-indicator {
-            font-size: 0.65rem;
-            background: #2563eb;
-            color: white;
-            padding: 0.1rem 0.3rem;
-            border-radius: 0.25rem;
-            margin-top: 0.25rem;
-            display: inline-block;
-        }
-
-        .is-base-color {
-            position: relative;
-        }
-
-        .is-base-color::before {
-            content: '';
-            position: absolute;
-            top: -2px;
-            left: -2px;
-            right: -2px;
-            bottom: -2px;
-            border: 2px solid #2563eb;
-            border-radius: 0.5rem;
-            pointer-events: none;
-        }
-
-        .wcag-info {
-            font-size: 0.75rem;
-            color: #64748b;
-            margin-top: 0.25rem;
-        }
-
-        .format-select {
-            padding: 0.75rem 0.5rem;
-            border: 1px solid var(--border-color);
-            border-radius: 0.375rem;
-            font-size: 0.875rem;
-            color: #64748b;
-            background: white;
-            cursor: pointer;
-        }
-
-        .format-select:hover {
-            background: #f8fafc;
-        }
-
-        /* Example UI Styles */
-        .example-ui {
-            max-width: 48rem;
-            margin: 2rem auto;
-            padding: 2rem;
-            background: white;
-            border-radius: 1rem;
-            box-shadow: 0 1px 3px 0 rgb(0 0 0 / 0.1), 0 1px 2px -1px rgb(0 0 0 / 0.1);
-        }
-
-        .example-section {
-            margin-bottom: 3rem;
-        }
-
-        .example-section:last-child {
-            margin-bottom: 0;
-        }
-
-        /* Alert Component */
-        .alert {
-            border-radius: 0.5rem;
-            padding: 1rem;
-            position: relative;
-            border-left: 4px solid;
-        }
-
-        .alert-header {
-            display: flex;
-            align-items: flex-start;
-            gap: 0.75rem;
-        }
-
-        .alert-content {
-            flex: 1;
-        }
-
-        .alert-title {
-            font-weight: 600;
-            margin-bottom: 0.25rem;
-        }
-
-        .alert-text {
-            margin-bottom: 1rem;
-        }
-
-        .alert-actions {
-            display: flex;
-            gap: 0.75rem;
-        }
-
-        .btn {
-            padding: 0.5rem 1rem;
-            border-radius: 9999px;
-            font-weight: 500;
-            border: none;
-            cursor: pointer;
-            font-size: 0.875rem;
-        }
-
-        .btn-secondary {
-            background: transparent;
-            border: 1px solid;
-        }
-
-        .close-button {
-            padding: 0.25rem;
-            border: none;
-            background: transparent;
-            cursor: pointer;
-            border-radius: 0.375rem;
-        }
-
-        /* Progress Bar */
-        .progress-section {
-            margin-bottom: 2rem;
-        }
-
-        .progress-header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 0.5rem;
-            font-size: 0.875rem;
-        }
-
-        .progress-bar {
-            height: 0.5rem;
-            border-radius: 9999px;
-            overflow: hidden;
-            margin-bottom: 0.5rem;
-        }
-
-        .progress-fill {
-            height: 100%;
-            width: 50%;
-            transition: width 0.3s ease;
-        }
-
-        .helper-text {
-            font-size: 0.875rem;
-        }
-
-        /* Menu Item */
-        .menu-item {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 1rem;
-            border-radius: 0.5rem;
-            margin-bottom: 2rem;
-        }
-
-        .menu-left {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-        }
-
-        .avatar {
-            width: 2rem;
-            height: 2rem;
-            border-radius: 9999px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 500;
-        }
-
-        .menu-label {
-            font-weight: 500;
-        }
-        .label-tag {
-            padding: 0.25rem 0.75rem;
-            border-radius: 9999px;
-            font-size: 0.875rem;
-        }
-
-        .menu-right {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-        }
-
-        /* Toggle Switch */
-        .toggle {
-            width: 3rem;
-            height: 1.5rem;
-            border-radius: 9999px;
-            padding: 0.125rem;
-            position: relative;
-            cursor: pointer;
-            border: none;
-            transition: background-color 0.2s ease;
-            display: flex;
-            align-items: center;
-        }
-
-        .toggle:hover {
-            opacity: 0.8;
-        }
-
-        .toggle-thumb {
-            width: 1.25rem;
-            height: 1.25rem;
-            border-radius: 50%;
-            position: absolute;
-            left: 0.125rem;
-            background-color: white;
-            transition: transform 0.2s ease;
-            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
-        }
-
-        .toggle[aria-checked="true"] .toggle-thumb {
-            transform: translateX(1.5rem);
-        }
-
-        /* Focus state */
-        .toggle:focus {
-            outline: none;
-            box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.1);
-        }
-
-        /* Active state */
-        .toggle:active .toggle-thumb {
-            width: 1.4rem; /* Slightly larger when clicked */
-        }
-
-        .kbd {
-            padding: 0.25rem 0.5rem;
-            border-radius: 0.375rem;
-            border: 1px solid;
-            font-size: 0.75rem;
-            font-family: ui-monospace, monospace;
-        }
-
-        /* Select Item */
-        .select-item {
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 1rem;
-            border-radius: 0.5rem;
-            cursor: pointer;
-            transition: background-color 0.2s;
-        }
-
-        .select-left {
-            display: flex;
-            align-items: center;
-            gap: 0.75rem;
-        }
-
-        .plus-box {
-            width: 1.5rem;
-            height: 1.5rem;
-            border-radius: 0.25rem;
-            border: 1px solid;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        .username {
-            opacity: 0.7;
-        }
-
-        .checkmark {
-            width: 1.5rem;
-            height: 1.5rem;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: white;
-        }
-
-        .wcag-overlay {
-            position: absolute;
-            inset: 0;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-family: ui-monospace, monospace;
-            text-align: center;
-        }
-
-        .wcag-text {
-            line-height: 1.2;
-            font-size: 0.75rem;
-        }
-
-        .wcag-level {
-            font-weight: 500;
-        }
-
-        .wcag-ratio {
-            font-size: 0.7rem;
-        }
-
-        .credit-card {
-    position: relative;
-    width: 380px;
-    height: 240px;
-    border-radius: 20px;
-    background: linear-gradient(135deg, var(--card-bg-light) 0%, var(--card-bg-dark) 100%);
-    padding: 25px;
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
-    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
-    isolation: isolate;
-}
-
-/* Radial blur effects */
-.credit-card::before,
-.credit-card::after {
-    content: '';
-    position: absolute;
-    border-radius: 50%;
-    z-index: -1;
-}
-
-.credit-card::before {
-    width: 150px;
-    height: 150px;
-    top: -20px;
-    right: -20px;
-    background: radial-gradient(circle, var(--card-highlight) 0%, transparent 90%);
-    filter: blur(25px);
-}
-
-.credit-card::after {
-    width: 200px;
-    height: 200px;
-    bottom: -50px;
-    left: -50px;
-    background: radial-gradient(circle, var(--card-highlight) 0%, transparent 90%);
-    filter: blur(35px);
-}
-
-.chip {
-    width: 45px;
-    height: 35px;
-    background: linear-gradient(135deg, var(--chip-light) 0%, var(--chip-dark) 100%);
-    border-radius: 6px;
-    margin-bottom: 30px;
-}
-
-.card-number {
-    font-family: 'Roboto Mono', monospace;
-    font-size: 22px;
-    letter-spacing: 2px;
-    margin-bottom: 20px;
-    color: var(--card-text);
-    text-shadow: 
-        0 1px 1px var(--text-shadow-light),
-        0 -1px 1px var(--text-shadow-dark);
-}
-
-.card-number span {
-    margin-right: 6px;
-}
-
-.card-type {
-    font-size: 16px;
-    text-transform: uppercase;
-    letter-spacing: 1px;
-    color: var(--card-text);
-    text-shadow: 
-        0 1px 1px var(--text-shadow-light),
-        0 -1px 1px var(--text-shadow-dark);
-}
-    </style>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <header class="header">
+    <header class="main-header">
         <div class="color-input-section">
-            <div class="input-group">
-                <div class="color-input-container">
-                    <input type="text" class="input" id="colorInput" placeholder="Enter color" value="#68AED9">
-                    <select class="format-select" id="colorFormat">
-                        <option value="hex">HEX</option>
-                        <option value="rgb">RGB</option>
-                        <option value="hsl">HSL</option>
-                    </select>
-                    <input type="color" class="color-picker" id="colorPicker" value="#68AED9">
-                </div>
-                <div class="stop-count-control">
-                    <button class="stop-button" id="decreaseStops">−</button>
-                    <span class="stop-count" id="stopCount">11</span>
-                    <button class="stop-button" id="increaseStops">+</button>
+            <div class="color-input-wrapper">
+                <input type="text" id="colorInput" placeholder="#14B8A6" value="#14B8A6">
+                <input type="color" id="colorPicker" value="#14B8A6">
+            </div>
+            
+            <div class="mode-toggle">
+                <label>
+                    <input type="checkbox" id="showAccent">
+                    Add Accent Color
+                </label>
+            </div>
+            
+            
+            <div class="accent-color-section" id="accentColorSection">
+                <div class="color-input-wrapper">
+                    <input type="text" id="accentColorInput" placeholder="#FF5A5F">
+                    <input type="color" id="accentColorPicker">
                 </div>
             </div>
-
-            <div class="controls-group">
-                <label class="lock-control">
-                    <input type="checkbox" id="lockBaseColor" checked>
-                    Approximate base color
-                </label>
-                <label class="lock-control">
-                    <input type="checkbox" id="showWCAG" checked>
-                    Show WCAG
-                </label>
-                <button class="reset-all-button" id="resetAllControls">
-                    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
-                        <path d="M3 3v5h5"/>
-                    </svg>
-                    Reset Controls
-                </button>
+        </div>
+        
+        <div class="header-controls">
+            <div class="stops-control">
+                <button id="decreaseStops">-</button>
+                <span id="stopCount">11</span>
+                <button id="increaseStops">+</button>
             </div>
+            
+            <div class="mode-toggle">
+                <label>
+                    <input type="checkbox" id="darkModeToggle">
+                    Dark Mode
+                </label>
+            </div>
+            
+            <label class="lock-base-color">
+                <input type="checkbox" id="lockBaseColor">
+                Lock Base Color
+            </label>
         </div>
     </header>
 
     <main class="main-content">
-        <div class="control-section">
-            <div class="control-group">
-                <div class="control-header">
-                    <h3 class="control-title">Lightness Controls</h3>
-                    <button class="reset-button" data-reset="lightness">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
-                            <path d="M3 3v5h5"/>
-                        </svg>
-                    </button>
-                </div>
-                <div class="slider-container">
-                    <label>Gap</label>
-                    <input type="range" class="slider" id="lightnessGap" min="0.5" max="2" step="0.1" value="1">
-                </div>
-                <div class="slider-container">
-                    <label>Distribution</label>
-                    <input type="range" class="slider" id="lightnessDistribution" min="-1" max="1" step="0.1" value="0">
-                </div>
-                <div class="meter" id="lightnessMeter">
-                    <div class="meter-center"></div>
+        <div class="shades-section">
+            <div class="primary-colors">
+                <h3>Primary colors</h3>
+                <div class="shades-list" id="primaryShades">
+                    <!-- Shades will be inserted here by JavaScript -->
                 </div>
             </div>
 
-            <div class="control-group">
-                <div class="control-header">
-                    <h3 class="control-title">Hue Controls</h3>
-                    <button class="reset-button" data-reset="hue">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
-                            <path d="M3 3v5h5"/>
-                        </svg>
-                    </button>
-                </div>
-                <div class="slider-container">
-                    <label>Gap</label>
-                    <input type="range" class="slider" id="hueGap" min="-30" max="30" step="0.5" value="0">
-                </div>
-                <div class="slider-container">
-                    <label>Distribution</label>
-                    <input type="range" class="slider" id="hueDistribution" min="-1" max="1" step="0.1" value="0">
-                </div>
-                <div class="meter" id="hueMeter">
-                    <div class="meter-center"></div>
+            <div class="neutral-colors">
+                <h3>Neutral colors</h3>
+                <div class="shades-list" id="neutralShades">
+                    <!-- Neutral shades will be inserted here by JavaScript -->
                 </div>
             </div>
 
-            <div class="control-group">
-                <div class="control-header">
-                    <h3 class="control-title">Saturation Controls</h3>
-                    <button class="reset-button" data-reset="saturation">
-                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 8"/>
-                            <path d="M3 3v5h5"/>
-                        </svg>
-                    </button>
-                </div>
-                <div class="slider-container">
-                    <label>Gap</label>
-                    <input type="range" class="slider" id="saturationGap" min="-100" max="100" step="1" value="0">
-                </div>
-                <div class="slider-container">
-                    <label>Distribution</label>
-                    <input type="range" class="slider" id="saturationDistribution" min="-1" max="1" step="0.1" value="0">
-                </div>
-                <div class="meter" id="saturationMeter">
-                    <div class="meter-center"></div>
+            <div class="accent-colors" id="accentColorsSection">
+                <h3>Accent colors</h3>
+                <div class="shades-list" id="accentShades">
+                    <!-- Accent shades will be inserted here by JavaScript -->
                 </div>
             </div>
         </div>
 
-        <!-- Example UI Section -->
         <div class="example-ui">
-            <!-- Alert Component -->
-            <div class="example-section alert" id="exampleAlert">
-                <div class="alert-header">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <circle cx="12" cy="12" r="10"/>
-                        <line x1="12" y1="8" x2="12" y2="12"/>
-                        <circle cx="12" cy="16" r="1" fill="currentColor"/>
-                    </svg>
-                    <div class="alert-content">
-                        <h3 class="alert-title">Alert title</h3>
-                        <p class="alert-text">Alert content</p>
-                        <div class="alert-actions">
-                            <button class="btn">Primary</button>
-                            <button class="btn btn-secondary">Secondary</button>
+         
+
+            <div class="example-content">
+                <div class="example-dashboard">
+                    <div class="container">
+                       
+                        
+                            <!-- Overview Card -->
+                            <div class="card">
+                                <div class="card-header">
+                                    <h2 class="card-title">Overview</h2>
+                                    <span class="text-gray-500">June 2024</span>
+                                </div>
+                                
+                                <div class="stats">
+                                    <div class="stat">
+                                        <div class="stat-value">40</div>
+                                        <div class="stat-label">Transaction</div>
+                                    </div>
+                                    <div class="stat">
+                                        <div class="stat-value">24</div>
+                                        <div class="stat-label">Income</div>
+                                    </div>
+                                    <div class="stat">
+                                        <div class="stat-value">16</div>
+                                        <div class="stat-label">Outcome</div>
+                                    </div>
+                                </div>
+                
+                                <div class="calendar">
+                                    <div class="calendar-header">S</div>
+                                    <div class="calendar-header">M</div>
+                                    <div class="calendar-header">T</div>
+                                    <div class="calendar-header">W</div>
+                                    <div class="calendar-header">T</div>
+                                    <div class="calendar-header">F</div>
+                                    <div class="calendar-header">S</div>
+                                    <div class="calendar-day endpoint">1</div>
+                                    <div class="calendar-day in-range">2</div>
+                                    <div class="calendar-day in-range">3</div>
+                                    <div class="calendar-day in-range">4</div>
+                                    <div class="calendar-day in-range">5</div>
+                                    <div class="calendar-day in-range">6</div>
+                                    <div class="calendar-day in-range">7</div>
+                                    <div class="calendar-day in-range">8</div>
+                                    <div class="calendar-day in-range">9</div>
+                                    <div class="calendar-day endpoint">10</div>
+                                    <div class="calendar-day">11</div>
+                                </div>
+                            </div>
+                
+                            <!-- Balance Card -->
+                            <div class="card">
+                                <div class="card-header">
+                                    <h2 class="card-title">Your Balance</h2>
+                                    <select>
+                                        <option>US Dollar</option>
+                                    </select>
+                                </div>
+                                
+                                <div class="balance-label">Balance</div>
+                                <div class="balance-value">$20,088.38</div>
+                                <div class="balance-change">Compared to last month +24.17%</div>
+                
+                                <div class="health-status">
+                                    <div style="color: var(--text-primary); margin-bottom: 4px;">Finance Health</div>
+                                    <div style="font-size: 0.875rem; color: var(--text-secondary);">is updating health status now ...</div>
+                                </div>
+                            </div>
+                
+                            <!-- Quick Actions Card -->
+                            <div class="card">
+                                <div class="card-header">
+                                    <h2 class="card-title">Quick Action</h2>
+                                    <span class="manage-link">Manage</span>
+                                </div>
+                
+                                <button class="action-button send">
+                                    <span>Send Money</span>
+                                    <span class="shortcut-badge">N</span>
+                                </button>
+                                
+                                <button class="action-button request">
+                                    <span>Request Money</span>
+                                    <span class="shortcut-badge">R</span>
+                                </button>
+                
+                                <div style="margin-top: 24px;">
+                                    <div style="color: var(--text-secondary); margin-bottom: 16px;">MY GOALS</div>
+                                    <div class="goal">
+                                        <div class="goal-header">
+                                            <span>Vacation</span>
+                                            <span>$12,500.00</span>
+                                        </div>
+                                        <div class="progress-bar">
+                                            <div class="fill" style="width: 80%"></div>
+                                        </div>
+                                        <div style="font-size: 0.75rem; color: #6B7280; margin-top: 4px;">
+                                            Achieved in 2 months!
+                                        </div>
+                                    </div>
+                                    <div class="goal">
+                                        <div class="goal-header">
+                                            <span>Marriage</span>
+                                            <span>$4,800.00</span>
+                                        </div>
+                                        <div class="progress-bar">
+                                            <div class="fill secondary" style="width: 60%"></div>
+                                        </div>
+                                        <div style="font-size: 0.75rem; color: #6B7280; margin-top: 4px;">
+                                            Achieved in 4 months!
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        
+                
+                        <!-- Bottom Row -->
+                        
+                            <!-- Recent Transactions Card -->
+                            <div class="card w-2/3">
+                                <div class="card-header">
+                                    <h2 class="card-title">Recent Transactions</h2>
+                                    <div class="manage-link">Filter</div>
+                                </div>
+                
+                                <div class="recent-transactions">
+                                    <div class="transaction">
+                                        <div style="display: flex; align-items: center;">
+                                            <div class="transaction-icon">
+                                                <i data-feather="package"></i>
+                                            </div>
+                                            <div class="transaction-info">
+                                                <div class="transaction-title">Online Shopping</div>
+                                                <div class="transaction-subtitle">Sent · Aug 24, 2024</div>
+                                            </div>
+                                        </div>
+                                        <div class="transaction-amount">
+                                            <div>-$45.99</div>
+                                            <div class="transaction-subtitle">€-42.19</div>
+                                        </div>
+                                    </div>
+                                    <div class="transaction">
+                                        <div style="display: flex; align-items: center;">
+                                            <div class="transaction-icon">
+                                                <i data-feather="coffee"></i>
+                                            </div>
+                                            <div class="transaction-info">
+                                                <div class="transaction-title">Cafe Expense</div>
+                                                <div class="transaction-subtitle">Sent · Aug 24, 2024</div>
+                                            </div>
+                                        </div>
+                                        <div class="transaction-amount">
+                                            <div>-$12.50</div>
+                                            <div class="transaction-subtitle">€-11.49</div>
+                                        </div>
+                                    </div>
+                                    <div class="transaction">
+                                        <div style="display: flex; align-items: center;">
+                                            <div class="transaction-icon">
+                                                <i data-feather="dollar-sign"></i>
+                                            </div>
+                                            <div class="transaction-info">
+                                                <div class="transaction-title">Freelance Income</div>
+                                                <div class="transaction-subtitle">Sent · Aug 24, 2024</div>
+                                            </div>
+                                        </div>
+                                        <div class="transaction-amount">
+                                            <div>+$250.00</div>
+                                            <div class="transaction-subtitle">€+229.59</div>
+                                        </div>
+                                    </div>
+                               
+                                </div>
+                            </div>
+                
+                            <!-- Pro Version Card -->
+                            <div class="card w-1/3 pro-version-card">
+                                <div class="card-header">
+                                    <h2 class="card-title">Pro Version</h2>
+                                    <span class="manage-link">Details</span>
+                                </div>
+                
+                                <div style="margin-bottom: 24px;">
+                                    <div style="color: var(--text-primary); font-size: 0.875rem;">More with Premium</div>
+                                    <p style="color: var(--text-secondary); font-size: 0.875rem;">
+                                        Our premium subscription elevate your experience and unlock of benefits.
+                                    </p>
+                                </div>
+                
+                                <div style="margin-bottom: 24px;">
+                                    <div style="color: var(--text-primary); font-size: 0.875rem; margin-bottom: 4px;">You'll Pay</div>
+                                    <div style="color: var(--text-primary); font-size: 1.5rem; font-weight: 700;">
+                                        $19.99 <span style="font-size: 0.875rem; color: var(--text-secondary); font-weight: normal;">/Month</span>
+                                    </div>
+                                </div>
+                
+                                <button class="premium-button">Learn More</button>
+                            </div>
+                     
+                
+                        <!-- Modern Widgets Section -->
+                        
+                            <!-- Maturity Widget -->
+                            <div class="card maturity-widget">
+                                <div class="card-header2">
+                                    <div class="widget-title">$21,353.88</div>
+                                    <div class="stats-badges">
+                                        <div class="stat-badge">min 7.4%</div>
+                                        <div class="stat-badge">earned +356.35</div>
+                                    </div>
+                                </div>
+                                <div class="progress-container">
+                                    <div class="progress-scale">
+                                        <span>0</span>
+                                        <span>50</span>
+                                        <span>100</span>
+                                    </div>
+                                    <div class="progress-steps">
+                                        <div class="progress-step active"></div>
+                                        <div class="progress-step active"></div>
+                                        <div class="progress-step active"></div>
+                                        <div class="progress-step active"></div>
+                                        <div class="progress-step active"></div>
+                                        <div class="progress-step active"></div>
+                                        <div class="progress-step active"></div>
+                                        <div class="progress-step active"></div>
+                                        <div class="progress-step"></div>
+                                        <div class="progress-step"></div>
+                                        <div class="progress-step"></div>
+                                        <div class="progress-step"></div>
+                                        <div class="progress-step"></div>
+                                        <div class="progress-step"></div>
+                                        <div class="progress-step"></div>
+                                        <div class="progress-step"></div>
+                                        <div class="progress-step"></div>
+                                        <div class="progress-step"></div>
+                                        <div class="progress-step"></div>
+                                        <div class="progress-step"></div>
+                                        <div class="progress-step"></div>
+                                        <div class="progress-step"></div>
+                                        <div class="progress-step"></div>
+                                        <div class="progress-step"></div>
+                                        <div class="progress-step"></div>
+                                        <div class="progress-step"></div>
+                                        <div class="progress-step"></div>
+                                        <div class="progress-step"></div>
+                                        <div class="progress-step"></div>
+                                        <div class="progress-step"></div>
+                                        <div class="progress-step"></div>
+                                        <div class="progress-step"></div>
+                                        <div class="progress-step"></div>
+                                        <div class="progress-step"></div>
+                                    </div>
+                                </div>
+                                <div class="flex justify-between items-center mt-4">
+                                    <div>
+                                        <div class="text-secondary">Unlock at</div>
+                                        <div class="text-primary">August 12, 2024</div>
+                                    </div>
+                                    <div class="maturity-badge">35% maturity</div>
+                                </div>
+                            </div>
+                
+                            <!-- Navigation Widget -->
+                            <div class="card nav-widget">
+                                <div class="nav-container">
+                                    <div class="nav-back">
+                                        <i data-feather="arrow-left" width="16" height="16"></i>
+                                    </div>
+                                    <div class="nav-content">
+                                        <div class="nav-header">
+                                            <div>
+                                                <div class="widget-title">300M</div>
+                                                <div class="text-secondary">Elizabeth Street</div>
+                                            </div>
+                                            <div class="control-buttons">
+                                                <button class="control-button">
+                                                    <i data-feather="pause" width="16" height="16"></i>
+                                                </button>
+                                                <button class="control-button stop">
+                                                    <i data-feather="square" width="16" height="16"></i>
+                                                </button>
+                                            </div>
+                                        </div>
+                                        <div class="nav-stats">
+                                            <div>
+                                                <div class="stat-label">ETA</div>
+                                                <div class="stat-value">10:21</div>
+                                            </div>
+                                            <div>
+                                                <div class="stat-label">Speed</div>
+                                                <div class="stat-value">18.4 km/h</div>
+                                            </div>
+                                            <div>
+                                                <div class="stat-label">Distance</div>
+                                                <div class="stat-value">12.4 km</div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        
+                
+                        
+                        
+                            <div class="card chart-widget">
+                                <div class="chart-header">
+                                    <div class="widget-title">$11,680</div>
+                                    <div class="subtitle">
+                                        this month's total closed won increased
+                                        <br>from last month's around <span class="highlight">+$6,450</span>
+                                    </div>
+                                </div>
+                                <div class="chart-container">
+                                    <div class="chart-bar" style="height: 40%">
+                                        <div class="bar-segment" style="height: 60%"></div>
+                                    </div>
+                                    <div class="chart-bar" style="height: 60%">
+                                        <div class="bar-segment" style="height: 65%"></div>
+                                    </div>
+                                    <div class="chart-bar" style="height: 80%">
+                                        <div class="bar-segment" style="height: 70%"></div>
+                                    </div>
+                                    <div class="chart-bar" style="height: 50%">
+                                        <div class="bar-segment" style="height: 55%"></div>
+                                    </div>
+                                    <div class="chart-bar" style="height: 90%">
+                                        <div class="bar-segment" style="height: 75%"></div>
+                                    </div>
+                                </div>
+                                <div class="chart-legend">
+                                    <div class="legend-item">
+                                        <div class="legend-dot" style="background: var(--primary-500)"></div>
+                                        <span>Existing Customers</span>
+                                    </div>
+                                    <div class="legend-item">
+                                        <div class="legend-dot" style="background: var(--primary-200)"></div>
+                                        <span>New Customers</span>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
-                    <button class="close-button">
-                        <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                            <line x1="18" y1="6" x2="6" y2="18"/>
-                            <line x1="6" y1="6" x2="18" y2="18"/>
-                        </svg>
-                    </button>
                 </div>
             </div>
-
-            <!-- Progress Bar Component -->
-            <div class="example-section progress-section">
-                <div class="progress-header">
-                    <span>Label</span>
-                    <span>50%</span>
-                </div>
-                <div class="progress-bar" id="exampleProgress">
-                    <div class="progress-fill"></div>
-                </div>
-                <p class="helper-text">Helper text</p>
-            </div>
-
-            <!-- Menu Item Component -->
-            <div class="example-section menu-item" id="exampleMenuItem">
-                <div class="menu-left">
-                    <div class="avatar">M</div>
-                    <span class="menu-label">Menu Item</span>
-                    <span class="label-tag">Label</span>
-                </div>
-                <div class="menu-right">
-                    <button class="toggle" role="switch" aria-checked="false" id="exampleToggle">
-                        <div class="toggle-thumb"></div>
-                    </button>
-                    <span class="kbd">⌘K</span>
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <polyline points="9 18 15 12 9 6"/>
-                    </svg>
-                </div>
-            </div>
-
-            <!-- Select Item Component -->
-            <div class="example-section select-item" id="exampleSelectItem">
-                <div class="select-left">
-                    <div class="plus-box">+</div>
-                    <span>Select Item</span>
-                    <span class="username">@fatik</span>
-                </div>
-                <div class="checkmark">
-                    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <polyline points="20 6 9 17 4 12"/>
-                    </svg>
-                </div>
-            </div>
-            <!-- Credit Card Component -->
-<div class="example-section">
-    <div class="credit-card" id="exampleCard">
-        <div class="chip"></div>
-        <div class="card-number">
-            <span>3574</span>
-            <span>5673</span>
-            <span>3466</span>
-            <span>2345</span>
         </div>
-        <div class="card-type">Debit</div>
-    </div>
-</div>
+
+        <div class="controls-sidebar">
+            <div class="control-section">
+            
+                
+                <div class="controls-content" id="primaryControls">
+                    <div class="control-group">
+                        <label>Hue</label>
+                        <div class="control-row">
+                            <div class="slider-group">
+                                <label>Gap</label>
+                                <input type="range" id="hueGap" min="-30" max="30" step="0.5" value="0">
+                            </div>
+                            <div class="slider-group">
+                                <label>Distribution</label>
+                                <input type="range" id="hueDistribution" min="-1" max="1" step="0.1" value="0">
+                            </div>
+                        </div>
+                        <div class="meter" id="hueMeter">
+                            <div class="meter-center"></div>
+                        </div>
+                    </div>
+
+                    <div class="control-group">
+                        <label>Saturation</label>
+                        <div class="control-row">
+                            <div class="slider-group">
+                                <label>Gap</label>
+                                <input type="range" id="saturationGap" min="-100" max="100" step="1" value="0">
+                            </div>
+                            <div class="slider-group">
+                                <label>Distribution</label>
+                                <input type="range" id="saturationDistribution" min="-1" max="1" step="0.1" value="0">
+                            </div>
+                        </div>
+                        <div class="meter" id="saturationMeter">
+                            <div class="meter-center"></div>
+                        </div>
+                    </div>
+
+                    <div class="control-group">
+                        <label>Lightness</label>
+                        <div class="control-row">
+                            <div class="slider-group">
+                                <label>Gap</label>
+                                <input type="range" id="lightnessGap" min="0.5" max="2" step="0.1" value="1">
+                            </div>
+                            <div class="slider-group">
+                                <label>Distribution</label>
+                                <input type="range" id="lightnessDistribution" min="-1" max="1" step="0.1" value="0">
+                            </div>
+                        </div>
+                        <div class="meter" id="lightnessMeter">
+                            <div class="meter-center"></div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="control-section">
+                <div class="control-divider"></div>
+                <div class="control-group">
+                    <div class="control-item">
+                        <label for="neutralSaturation">Neutral Saturation</label>
+                        <input type="range" id="neutralSaturation" min="0" max="50" step="1" value="15">
+                        <span class="control-value" id="neutralSaturationValue">15</span>
+                    </div>
+                </div>
+            </div>
+
+            <button class="reset-button" id="resetControls">
+                <i data-feather="refresh-cw" width="16" height="16"></i>
+                Reset Controls
+            </button>
         </div>
     </main>
 
-    <footer class="footer">
-        <div class="shades-section">
-            <div class="shades" id="shades">
-                <!-- Shades will be generated by JavaScript -->
-            </div>
-        </div>
-    </footer>
-    <script data-goatcounter="https://03333368701.goatcounter.com/count"
-    async src="//gc.zgo.at/count.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/feather-icons/4.29.2/feather.min.js"></script>
     <script>
-const _0x2f66dd=_0x5ef0;(function(_0x518d44,_0x4ecb7a){const _0x5a932f=_0x5ef0,_0x5ed4cd=_0x518d44();while(!![]){try{const _0x589c28=parseInt(_0x5a932f(0x85))/0x1+parseInt(_0x5a932f(0xaf))/0x2*(-parseInt(_0x5a932f(0xa6))/0x3)+parseInt(_0x5a932f(0xb1))/0x4*(-parseInt(_0x5a932f(0x98))/0x5)+parseInt(_0x5a932f(0xa2))/0x6+-parseInt(_0x5a932f(0xd2))/0x7*(parseInt(_0x5a932f(0xb6))/0x8)+-parseInt(_0x5a932f(0x81))/0x9*(-parseInt(_0x5a932f(0xfb))/0xa)+-parseInt(_0x5a932f(0xdd))/0xb*(-parseInt(_0x5a932f(0xc9))/0xc);if(_0x589c28===_0x4ecb7a)break;else _0x5ed4cd['push'](_0x5ed4cd['shift']());}catch(_0x1d0834){_0x5ed4cd['push'](_0x5ed4cd['shift']());}}}(_0x5a18,0x7a4e3));const state={'inputColor':_0x2f66dd(0x73),'stopCount':0xb,'lightnessGap':0x1,'lightnessDistribution':0x0,'hueGap':0x0,'hueDistribution':0x0,'saturationGap':0x0,'saturationDistribution':0x0,'lockBaseColor':!![],'showWCAG':!![]};function hexToHSL(_0x151507){const _0x15f7e3=_0x2f66dd;_0x151507=_0x151507[_0x15f7e3(0x6e)](/^#/,'');const _0x538ea9=parseInt(_0x151507[_0x15f7e3(0x8c)](0x0,0x2),0x10)/0xff,_0x36bd12=parseInt(_0x151507['slice'](0x2,0x4),0x10)/0xff,_0x5bf81f=parseInt(_0x151507[_0x15f7e3(0x8c)](0x4,0x6),0x10)/0xff,_0x1b5bbc=Math[_0x15f7e3(0x75)](_0x538ea9,_0x36bd12,_0x5bf81f),_0xf5dfe0=Math['min'](_0x538ea9,_0x36bd12,_0x5bf81f);let _0x46f2c9,_0x13805b,_0x516612=(_0x1b5bbc+_0xf5dfe0)/0x2;if(_0x1b5bbc===_0xf5dfe0)_0x46f2c9=_0x13805b=0x0;else{const _0x237926=_0x1b5bbc-_0xf5dfe0;_0x13805b=_0x516612>0.5?_0x237926/(0x2-_0x1b5bbc-_0xf5dfe0):_0x237926/(_0x1b5bbc+_0xf5dfe0);switch(_0x1b5bbc){case _0x538ea9:_0x46f2c9=(_0x36bd12-_0x5bf81f)/_0x237926+(_0x36bd12<_0x5bf81f?0x6:0x0);break;case _0x36bd12:_0x46f2c9=(_0x5bf81f-_0x538ea9)/_0x237926+0x2;break;case _0x5bf81f:_0x46f2c9=(_0x538ea9-_0x36bd12)/_0x237926+0x4;break;}_0x46f2c9/=0x6;}return{'h':_0x46f2c9*0x168,'s':_0x13805b*0x64,'l':_0x516612*0x64};}function HSLToHex(_0x289fd6,_0x121741,_0x8c5a02){const _0x35cb89=_0x2f66dd;_0x289fd6=_0x289fd6%0x168;if(_0x289fd6<0x0)_0x289fd6+=0x168;_0x121741=Math[_0x35cb89(0xad)](0x64,Math[_0x35cb89(0x75)](0x0,_0x121741)),_0x8c5a02=Math[_0x35cb89(0xad)](0x64,Math[_0x35cb89(0x75)](0x0,_0x8c5a02));const _0x8689f9=(0x1-Math[_0x35cb89(0xe4)](0x2*_0x8c5a02/0x64-0x1))*_0x121741/0x64,_0x3da3fd=_0x8689f9*(0x1-Math[_0x35cb89(0xe4)](_0x289fd6/0x3c%0x2-0x1)),_0xe0e55e=_0x8c5a02/0x64-_0x8689f9/0x2;let _0x4f96de,_0x29d819,_0x4e26bb;if(0x0<=_0x289fd6&&_0x289fd6<0x3c)[_0x4f96de,_0x29d819,_0x4e26bb]=[_0x8689f9,_0x3da3fd,0x0];else{if(0x3c<=_0x289fd6&&_0x289fd6<0x78)[_0x4f96de,_0x29d819,_0x4e26bb]=[_0x3da3fd,_0x8689f9,0x0];else{if(0x78<=_0x289fd6&&_0x289fd6<0xb4)[_0x4f96de,_0x29d819,_0x4e26bb]=[0x0,_0x8689f9,_0x3da3fd];else{if(0xb4<=_0x289fd6&&_0x289fd6<0xf0)[_0x4f96de,_0x29d819,_0x4e26bb]=[0x0,_0x3da3fd,_0x8689f9];else 0xf0<=_0x289fd6&&_0x289fd6<0x12c?[_0x4f96de,_0x29d819,_0x4e26bb]=[_0x3da3fd,0x0,_0x8689f9]:[_0x4f96de,_0x29d819,_0x4e26bb]=[_0x8689f9,0x0,_0x3da3fd];}}}const _0xaf64fa=_0xfd038e=>{const _0x3f6c15=_0x35cb89,_0x5cf469=Math['round']((_0xfd038e+_0xe0e55e)*0xff)[_0x3f6c15(0xb4)](0x10);return _0x5cf469[_0x3f6c15(0xf1)]===0x1?'0'+_0x5cf469:_0x5cf469;};return('#'+_0xaf64fa(_0x4f96de)+_0xaf64fa(_0x29d819)+_0xaf64fa(_0x4e26bb))['toUpperCase']();}function hexToRGB(_0x1756de){const _0xfc7d76=_0x2f66dd;_0x1756de=_0x1756de[_0xfc7d76(0x6e)](/^#/,'');const _0x5e1a9e=parseInt(_0x1756de[_0xfc7d76(0x8c)](0x0,0x2),0x10),_0x29424e=parseInt(_0x1756de[_0xfc7d76(0x8c)](0x2,0x4),0x10),_0x58dd9f=parseInt(_0x1756de[_0xfc7d76(0x8c)](0x4,0x6),0x10);return{'r':_0x5e1a9e,'g':_0x29424e,'b':_0x58dd9f};}function calculateLuminance(_0x5b585f){const _0x22a6c8=hexToRGB(_0x5b585f);return luminance(_0x22a6c8['r'],_0x22a6c8['g'],_0x22a6c8['b']);}function luminance(_0x1e6daa,_0x50b224,_0x511390){const _0x5094b6=_0x2f66dd;let [_0x57212d,_0x1fac70,_0x44280b]=[_0x1e6daa,_0x50b224,_0x511390][_0x5094b6(0xe9)](_0x23cfdc=>{const _0x12073c=_0x5094b6;return _0x23cfdc=_0x23cfdc/0xff,_0x23cfdc<=0.03928?_0x23cfdc/12.92:Math[_0x12073c(0xd6)]((_0x23cfdc+0.055)/1.055,2.4);});return 0.2126*_0x57212d+0.7152*_0x1fac70+0.0722*_0x44280b;}function contrastRatio(_0x200db4,_0x2fdbc9){const _0x2fcdec=_0x2f66dd,_0x305cff=Math['max'](_0x200db4,_0x2fdbc9),_0x34ad35=Math[_0x2fcdec(0xad)](_0x200db4,_0x2fdbc9);return(_0x305cff+0.05)/(_0x34ad35+0.05);}function luminance(_0xf5e617,_0x3f8435,_0x3b5747){const _0xe49ec8=_0x2f66dd;let [_0x2bc7e1,_0x127f31,_0x386562]=[_0xf5e617,_0x3f8435,_0x3b5747][_0xe49ec8(0xe9)](_0x881ea0=>{const _0x2959ed=_0xe49ec8;return _0x881ea0=_0x881ea0/0xff,_0x881ea0<=0.03928?_0x881ea0/12.92:Math[_0x2959ed(0xd6)]((_0x881ea0+0.055)/1.055,2.4);});return 0.2126*_0x2bc7e1+0.7152*_0x127f31+0.0722*_0x386562;}function contrastRatio(_0x57e53c,_0x1ec65e){const _0x258152=_0x2f66dd,_0x4d2000=Math[_0x258152(0x75)](_0x57e53c,_0x1ec65e),_0x4eb50c=Math[_0x258152(0xad)](_0x57e53c,_0x1ec65e);return(_0x4d2000+0.05)/(_0x4eb50c+0.05);}function getContrastRatio(_0x206780){const _0x191ffa=_0x2f66dd;_0x206780=_0x206780['replace'](/^#/,'');const _0x4e55ca=parseInt(_0x206780[_0x191ffa(0x8c)](0x0,0x2),0x10),_0xfb4f8a=parseInt(_0x206780[_0x191ffa(0x8c)](0x2,0x4),0x10),_0x3e0890=parseInt(_0x206780['slice'](0x4,0x6),0x10),_0x41161c=luminance(_0x4e55ca,_0xfb4f8a,_0x3e0890),_0x26edf4=0x1,_0x100fe1=0x0,_0x5085fe=contrastRatio(_0x26edf4,_0x41161c),_0x3a72a1=contrastRatio(_0x100fe1,_0x41161c);return{'whiteContrast':_0x5085fe[_0x191ffa(0x8b)](0x2),'blackContrast':_0x3a72a1[_0x191ffa(0x8b)](0x2),'preferredText':_0x5085fe>_0x3a72a1?'white':_0x191ffa(0x8a)};}function updateShades(){const _0x556c4f=_0x2f66dd,_0x58fb8c=document[_0x556c4f(0xf2)](_0x556c4f(0x9a)),_0x174c2f=generatePalette(),_0x158c70=document[_0x556c4f(0xf2)](_0x556c4f(0xbe))[_0x556c4f(0x78)],_0x99ae2a=_0x174c2f[0x0]?.[_0x556c4f(0xe2)]||'#FFFFFF',_0x2aeeb6=_0x174c2f[_0x174c2f[_0x556c4f(0xf1)]-0x1]?.[_0x556c4f(0xe2)]||_0x556c4f(0xa1);_0x58fb8c[_0x556c4f(0xbd)]=_0x174c2f[_0x556c4f(0xe9)](_0xf919be=>{const _0x5d7d06=_0x556c4f,_0x3db68d=calculateLuminance(_0xf919be[_0x5d7d06(0xe2)]),_0x37e8b1=_0x3db68d>0.3?_0x2aeeb6:_0x99ae2a,_0x12cf17=calculateLuminance(_0x37e8b1),_0x193fcd=(Math['max'](_0x12cf17,_0x3db68d)+0.05)/(Math[_0x5d7d06(0xad)](_0x12cf17,_0x3db68d)+0.05),_0x7cfe40=_0x193fcd>=0x7?_0x5d7d06(0xb2):_0x193fcd>=4.5?'AA':'';return _0x5d7d06(0xd5)+(_0xf919be[_0x5d7d06(0xf0)]?'is-base-color':'')+_0x5d7d06(0xda)+_0xf919be[_0x5d7d06(0xe2)]+'\x22\x20onclick=\x22copyToClipboard(\x27'+formatColor(_0xf919be[_0x5d7d06(0xe2)],_0x158c70)+_0x5d7d06(0xf6)+(state['showWCAG']?_0x5d7d06(0xbc)+_0x37e8b1+_0x5d7d06(0xac)+(_0x7cfe40||'—')+_0x5d7d06(0x83)+_0x193fcd['toFixed'](0x2)+_0x5d7d06(0xc4):'')+_0x5d7d06(0x79)+_0xf919be[_0x5d7d06(0xd3)]+_0x5d7d06(0x74)+formatColor(_0xf919be[_0x5d7d06(0xe2)],_0x158c70)+_0x5d7d06(0x86)+(_0xf919be[_0x5d7d06(0xf0)]?_0x5d7d06(0xae):'')+'\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20';})[_0x556c4f(0xd1)]('');}function formatColor(_0x1d046b,_0x20a1c0){const _0x4c3f43=_0x2f66dd;switch(_0x20a1c0){case _0x4c3f43(0x88):return _0x1d046b[_0x4c3f43(0xc8)]();case _0x4c3f43(0xd0):{const {r:_0x603cd,g:_0x48ac08,b:_0x140080}=hexToRGB(_0x1d046b);return _0x4c3f43(0x71)+_0x603cd+',\x20'+_0x48ac08+',\x20'+_0x140080+')';}case'hsl':{const {h:_0x48d85c,s:_0xf719c9,l:_0x111306}=hexToHSL(_0x1d046b);return _0x4c3f43(0x9d)+Math['round'](_0x48d85c)+',\x20'+Math[_0x4c3f43(0x89)](_0xf719c9)+_0x4c3f43(0xcb)+Math[_0x4c3f43(0x89)](_0x111306)+'%)';}default:return _0x1d046b;}}function generateStopNumber(_0x599f35,_0x5504bc){if(_0x599f35===0x0)return 0x32;if(_0x599f35===_0x5504bc-0x1)return(_0x5504bc-0x2)*0x64+0x32;return _0x599f35*0x64;}function generatePalette(){const _0x50d07d=_0x2f66dd,_0x3e10f9=hexToHSL(state[_0x50d07d(0xc7)]),_0x1be5b3=_0x3e10f9['h'],_0x2ab9b9=_0x3e10f9['s'],_0x4b0f47=calculateLuminance(state[_0x50d07d(0xc7)]);let _0x4eb7eb=Array[_0x50d07d(0x8d)]({'length':state['stopCount']},(_0x4c79e8,_0x2720fc)=>{const _0x4d24ef=_0x50d07d,_0x157e96=generateStopNumber(_0x2720fc,state[_0x4d24ef(0x72)]);let _0x9f2fc2;if(state[_0x4d24ef(0x9b)]>=0x0){const _0x2e866e=Math[_0x4d24ef(0xd6)](_0x2720fc/(state[_0x4d24ef(0x72)]-0x1),0x1+state['lightnessDistribution']);_0x9f2fc2=0x62-(0x62-0xa)*_0x2e866e*state[_0x4d24ef(0x70)];}else{const _0x4cfd3e=Math[_0x4d24ef(0xd6)](0x1-_0x2720fc/(state[_0x4d24ef(0x72)]-0x1),0x1-state['lightnessDistribution']);_0x9f2fc2=0xa+(0x62-0xa)*_0x4cfd3e*state['lightnessGap'];}const _0x2b92a9=_0x2720fc/(state['stopCount']-0x1);let _0x38d388;state[_0x4d24ef(0xa9)]>=0x0?_0x38d388=state[_0x4d24ef(0x6d)]*Math[_0x4d24ef(0xd6)](_0x2b92a9,0x1+state['hueDistribution']):_0x38d388=state['hueGap']*Math[_0x4d24ef(0xd6)](_0x2b92a9,0x1/(0x1-state[_0x4d24ef(0xa9)]));const _0x2854ce=_0x1be5b3+_0x38d388;let _0x21a3e6;state[_0x4d24ef(0xa5)]>=0x0?_0x21a3e6=state[_0x4d24ef(0x87)]*Math['pow'](_0x2b92a9,0x1+state['saturationDistribution']):_0x21a3e6=state[_0x4d24ef(0x87)]*Math[_0x4d24ef(0xd6)](_0x2b92a9,0x1/(0x1-state[_0x4d24ef(0xa5)]));const _0x47169d=Math[_0x4d24ef(0x75)](0x0,Math[_0x4d24ef(0xad)](0x64,_0x2ab9b9+_0x21a3e6)),_0x1aa27d=HSLToHex(_0x2854ce,_0x47169d,_0x9f2fc2);return{'number':_0x157e96,'color':_0x1aa27d,'luminance':calculateLuminance(_0x1aa27d),'isBaseColor':![]};});if(!state[_0x50d07d(0x7d)]){let _0x3cefca=_0x4eb7eb[_0x50d07d(0xf1)]-0x1;for(let _0x2d1152=_0x4eb7eb[_0x50d07d(0xf1)]-0x1;_0x2d1152>=0x0;_0x2d1152--){if(_0x4b0f47<_0x4eb7eb[_0x2d1152][_0x50d07d(0x7b)]){_0x3cefca=_0x2d1152;break;}}_0x4eb7eb[_0x3cefca]={'number':generateStopNumber(_0x3cefca,state[_0x50d07d(0x72)]),'color':state['inputColor'],'luminance':_0x4b0f47,'isBaseColor':!![]};}return window[_0x50d07d(0x9a)]=_0x4eb7eb,_0x4eb7eb;}function getMeterPosition(_0x440284,_0x53d46b,_0x115e47){const _0x502068=_0x2f66dd,_0x5affd8=Math['floor'](_0x53d46b/0x2);if(_0x440284===_0x5affd8)return 0x32;const _0xe2cea6=_0x440284/(_0x53d46b-0x1);let _0x176510;switch(_0x115e47){case _0x502068(0xdf):if(state[_0x502068(0x9b)]>=0x0){const _0x16891b=Math[_0x502068(0xd6)](_0xe2cea6,0x1+state['lightnessDistribution']);_0x176510=0x64-_0x16891b*0x64*state['lightnessGap'];}else{const _0x43d9c7=Math[_0x502068(0xd6)](0x1-_0xe2cea6,0x1-state[_0x502068(0x9b)]);_0x176510=_0x43d9c7*0x64*state['lightnessGap'];}break;case _0x502068(0x82):state['hueDistribution']>=0x0?_0x176510=0x32+state['hueGap']*Math[_0x502068(0xd6)](_0xe2cea6,0x1+state[_0x502068(0xa9)])/0.6:_0x176510=0x32+state[_0x502068(0x6d)]*Math[_0x502068(0xd6)](_0xe2cea6,0x1/(0x1-state[_0x502068(0xa9)]))/0.6;break;case _0x502068(0x7a):state[_0x502068(0xa5)]>=0x0?_0x176510=0x32+state[_0x502068(0x87)]*Math[_0x502068(0xd6)](_0xe2cea6,0x1+state[_0x502068(0xa5)])/0x2:_0x176510=0x32+state[_0x502068(0x87)]*Math['pow'](_0xe2cea6,0x1/(0x1-state[_0x502068(0xa5)]))/0x2;break;}return Math['max'](0x0,Math[_0x502068(0xad)](0x64,_0x176510));}function updateMeters(){const _0x4bba8c=_0x2f66dd;['lightness',_0x4bba8c(0x82),_0x4bba8c(0x7a)][_0x4bba8c(0x9e)](_0xb3c51e=>{const _0x3bee70=_0x4bba8c,_0x4dd747=document[_0x3bee70(0xf2)](_0xb3c51e+_0x3bee70(0xf8));_0x4dd747[_0x3bee70(0xbd)]=_0x3bee70(0x99),Array[_0x3bee70(0x8d)]({'length':state['stopCount']})['forEach']((_0x1d40c2,_0x2ff012)=>{const _0xbfb85=_0x3bee70,_0x47d890=document[_0xbfb85(0xc5)](_0xbfb85(0xd4));_0x47d890[_0xbfb85(0xc6)]=_0xbfb85(0xa8),_0x47d890[_0xbfb85(0xf9)][_0xbfb85(0xd8)]=getMeterPosition(_0x2ff012,state[_0xbfb85(0x72)],_0xb3c51e)+'%',_0x4dd747[_0xbfb85(0xf4)](_0x47d890);});});}function updateToggleState(_0x290e06,_0x358f7b){const _0x1ab8f8=_0x2f66dd,_0x3da3e5=window[_0x1ab8f8(0x9a)]||[],_0x1766a8=_0x482905=>_0x3da3e5[_0x1ab8f8(0xb8)](_0x30c810=>_0x30c810[_0x1ab8f8(0xd3)]===_0x482905)?.[_0x1ab8f8(0xe2)]||'#000000';_0x290e06[_0x1ab8f8(0x7e)](_0x1ab8f8(0x96),String(_0x358f7b)),_0x290e06['style']['backgroundColor']=_0x358f7b?_0x1766a8(0x258):_0x1766a8(0xc8),_0x290e06['querySelector']('.toggle-thumb')['style'][_0x1ab8f8(0xa3)]=_0x1ab8f8(0xfa);}function updateExampleUI(){const _0x480e1e=_0x2f66dd,_0x25053c=window['shades']||[],_0x3e4fe8=_0x354bce=>{const _0x52b0bc=_0x5ef0,_0x39cf5f=_0x25053c[_0x52b0bc(0xb8)](_0x1e7a77=>_0x1e7a77[_0x52b0bc(0xd3)]===_0x354bce);return _0x39cf5f?.[_0x52b0bc(0xe2)]||'#000000';},_0x53d57f=document[_0x480e1e(0xf2)](_0x480e1e(0x94));if(_0x53d57f){_0x53d57f['style'][_0x480e1e(0xa3)]=_0x3e4fe8(0x32),_0x53d57f['style'][_0x480e1e(0xea)]=_0x3e4fe8(0x258),_0x53d57f[_0x480e1e(0x7f)]('svg')[_0x480e1e(0xf9)]['color']=_0x3e4fe8(0x258),_0x53d57f['querySelector'](_0x480e1e(0x76))[_0x480e1e(0xf9)]['color']=_0x3e4fe8(0x384),_0x53d57f[_0x480e1e(0x7f)](_0x480e1e(0x9c))[_0x480e1e(0xf9)][_0x480e1e(0xe2)]=_0x3e4fe8(0x258);const _0x3f62f6=_0x53d57f['querySelector'](_0x480e1e(0xc1));_0x3f62f6[_0x480e1e(0xf9)][_0x480e1e(0xa3)]=_0x3e4fe8(0x258),_0x3f62f6[_0x480e1e(0xf9)]['color']=_0x3e4fe8(0x32);const _0x2cfb22=_0x53d57f['querySelector'](_0x480e1e(0x90));_0x2cfb22[_0x480e1e(0xf9)][_0x480e1e(0xba)]=_0x3e4fe8(0xc8),_0x2cfb22[_0x480e1e(0xf9)][_0x480e1e(0xe2)]=_0x3e4fe8(0x2bc),_0x53d57f[_0x480e1e(0x7f)](_0x480e1e(0x97))[_0x480e1e(0xf9)][_0x480e1e(0xe2)]=_0x3e4fe8(0x190);}const _0x19be75=document[_0x480e1e(0xf2)](_0x480e1e(0xe0));if(_0x19be75){_0x19be75[_0x480e1e(0xf9)][_0x480e1e(0xa3)]=_0x3e4fe8(0x64),_0x19be75['querySelector']('.progress-fill')[_0x480e1e(0xf9)][_0x480e1e(0xa3)]=_0x3e4fe8(0x258);const _0x291a20=_0x19be75['parentElement'][_0x480e1e(0x7f)]('.progress-header');_0x291a20['style'][_0x480e1e(0xe2)]=_0x3e4fe8(0x2bc),_0x19be75[_0x480e1e(0xed)][_0x480e1e(0x7f)](_0x480e1e(0xb3))['style'][_0x480e1e(0xe2)]=_0x3e4fe8(0x1f4);}const _0x3b7a56=document['getElementById'](_0x480e1e(0xca));if(_0x3b7a56){_0x3b7a56[_0x480e1e(0xf9)][_0x480e1e(0xa3)]=_0x3e4fe8(0x32),_0x3b7a56[_0x480e1e(0x7f)](_0x480e1e(0x6b))[_0x480e1e(0xf9)][_0x480e1e(0xa3)]=_0x3e4fe8(0x64),_0x3b7a56['querySelector']('.avatar')['style']['color']=_0x3e4fe8(0x258);const _0x44a5e7=_0x3b7a56[_0x480e1e(0x7f)](_0x480e1e(0xab));_0x44a5e7[_0x480e1e(0xf9)]['backgroundColor']=_0x3e4fe8(0x64),_0x44a5e7['style'][_0x480e1e(0xe2)]=_0x3e4fe8(0x258);const _0x247957=_0x3b7a56[_0x480e1e(0x7f)](_0x480e1e(0xe1)),_0x4c5eca=_0x247957[_0x480e1e(0x91)](_0x480e1e(0x96))===_0x480e1e(0x80);updateToggleState(_0x247957,_0x4c5eca);const _0x1fccfc=_0x3b7a56[_0x480e1e(0x7f)](_0x480e1e(0xd7));_0x1fccfc[_0x480e1e(0xf9)]['borderColor']=_0x3e4fe8(0xc8),_0x1fccfc[_0x480e1e(0xf9)][_0x480e1e(0xe2)]=_0x3e4fe8(0x1f4),_0x3b7a56[_0x480e1e(0x7f)](_0x480e1e(0xb7))[_0x480e1e(0xf9)][_0x480e1e(0xe2)]=_0x3e4fe8(0x190);}const _0x2eac67=document[_0x480e1e(0xf2)](_0x480e1e(0xef));if(_0x2eac67){_0x2eac67['querySelector'](_0x480e1e(0xc2))[_0x480e1e(0xf9)][_0x480e1e(0xba)]=_0x3e4fe8(0xc8),_0x2eac67['querySelector'](_0x480e1e(0xee))[_0x480e1e(0xf9)][_0x480e1e(0xe2)]=_0x3e4fe8(0x2bc),_0x2eac67['querySelector'](_0x480e1e(0xdb))[_0x480e1e(0xf9)][_0x480e1e(0xe2)]=_0x3e4fe8(0x1f4);const _0x428e17=_0x2eac67[_0x480e1e(0x7f)]('.checkmark');_0x428e17[_0x480e1e(0xf9)][_0x480e1e(0xa3)]=_0x3e4fe8(0x258),_0x428e17['querySelector'](_0x480e1e(0xb7))['style'][_0x480e1e(0xb5)]=_0x3e4fe8(0x32),_0x2eac67[_0x480e1e(0xcc)][_0x480e1e(0x8e)]('selected')&&(_0x2eac67[_0x480e1e(0xf9)][_0x480e1e(0xa3)]=_0x3e4fe8(0x32));}const _0x169dbd=document[_0x480e1e(0xf2)](_0x480e1e(0xf7));_0x169dbd&&(_0x169dbd[_0x480e1e(0xf9)][_0x480e1e(0x93)](_0x480e1e(0xc0),_0x3e4fe8(0xc8)),_0x169dbd[_0x480e1e(0xf9)][_0x480e1e(0x93)](_0x480e1e(0xde),_0x3e4fe8(0x12c)),_0x169dbd['style'][_0x480e1e(0x93)](_0x480e1e(0xf3),_0x3e4fe8(0x64)),_0x169dbd[_0x480e1e(0xf9)][_0x480e1e(0x93)](_0x480e1e(0xc3),_0x3e4fe8(0x2bc)),_0x169dbd[_0x480e1e(0xf9)][_0x480e1e(0x93)](_0x480e1e(0x9f),_0x3e4fe8(0x64)+'40'),_0x169dbd[_0x480e1e(0xf9)]['setProperty'](_0x480e1e(0x92),_0x3e4fe8(0x190)+'40'),_0x169dbd[_0x480e1e(0xf9)]['setProperty']('--chip-light',_0x3e4fe8(0x12c)),_0x169dbd[_0x480e1e(0xf9)][_0x480e1e(0x93)](_0x480e1e(0x8f),_0x3e4fe8(0x190)));}function updateStopButtonStates(){const _0x4a7536=_0x2f66dd;document[_0x4a7536(0xf2)](_0x4a7536(0xe3))[_0x4a7536(0xa7)]=state[_0x4a7536(0x72)]<=0x2,document[_0x4a7536(0xf2)](_0x4a7536(0x6f))[_0x4a7536(0xa7)]=state['stopCount']>=0x14;}function updateUI(){const _0x123b67=_0x2f66dd;updateMeters(),updateShades(),document[_0x123b67(0xf2)](_0x123b67(0x72))[_0x123b67(0x95)]=state['stopCount'],document[_0x123b67(0xf2)](_0x123b67(0x77))[_0x123b67(0x78)]=state[_0x123b67(0xc7)],document[_0x123b67(0xf2)]('colorPicker')[_0x123b67(0x78)]=state[_0x123b67(0xc7)],updateStopButtonStates(),updateExampleUI();}async function copyToClipboard(_0x2171e9){const _0x22bfa=_0x2f66dd;try{await navigator[_0x22bfa(0xa4)]['writeText'](_0x2171e9);}catch(_0x366429){console['error']('Failed\x20to\x20copy:',_0x366429);}}function handleColorInput(_0x30045a){const _0x6ebb6d=_0x2f66dd,_0x244efc=_0x30045a['target'][_0x6ebb6d(0x78)];/^#[0-9A-F]{6}$/i[_0x6ebb6d(0x6a)](_0x244efc)&&(state[_0x6ebb6d(0xc7)]=_0x244efc[_0x6ebb6d(0xc8)](),document[_0x6ebb6d(0xf2)]('colorPicker')['value']=_0x244efc,updateUI());}function handleColorPicker(_0x4ff1eb){const _0x401114=_0x2f66dd;state[_0x401114(0xc7)]=_0x4ff1eb[_0x401114(0xe7)][_0x401114(0x78)][_0x401114(0xc8)](),document[_0x401114(0xf2)](_0x401114(0x77))['value']=state[_0x401114(0xc7)],updateUI();}function resetLightnessControls(){const _0x3c4b5f=_0x2f66dd;state[_0x3c4b5f(0x70)]=0x1,state[_0x3c4b5f(0x9b)]=0x0,document[_0x3c4b5f(0xf2)](_0x3c4b5f(0x70))[_0x3c4b5f(0x78)]=0x1,document[_0x3c4b5f(0xf2)]('lightnessDistribution')[_0x3c4b5f(0x78)]=0x0,updateUI();}function resetHueControls(){const _0xc08cbe=_0x2f66dd;state['hueGap']=0x0,state[_0xc08cbe(0xa9)]=0x0,document[_0xc08cbe(0xf2)](_0xc08cbe(0x6d))[_0xc08cbe(0x78)]=0x0,document[_0xc08cbe(0xf2)](_0xc08cbe(0xa9))[_0xc08cbe(0x78)]=0x0,updateUI();}function _0x5ef0(_0x26ed4d,_0x283634){const _0x5a1839=_0x5a18();return _0x5ef0=function(_0x5ef0b1,_0xccb411){_0x5ef0b1=_0x5ef0b1-0x6a;let _0x4375de=_0x5a1839[_0x5ef0b1];return _0x4375de;},_0x5ef0(_0x26ed4d,_0x283634);}function resetSaturationControls(){const _0x42934b=_0x2f66dd;state['saturationGap']=0x0,state[_0x42934b(0xa5)]=0x0,document[_0x42934b(0xf2)]('saturationGap')['value']=0x0,document[_0x42934b(0xf2)](_0x42934b(0xa5))['value']=0x0,updateUI();}function resetAllControls(){resetLightnessControls(),resetHueControls(),resetSaturationControls();}function setupEventListeners(){const _0x21bec=_0x2f66dd;document['getElementById'](_0x21bec(0x77))[_0x21bec(0xeb)](_0x21bec(0xf5),handleColorInput),document[_0x21bec(0xf2)](_0x21bec(0xcd))[_0x21bec(0xeb)](_0x21bec(0xf5),handleColorPicker),document[_0x21bec(0xf2)](_0x21bec(0xe3))['addEventListener'](_0x21bec(0x84),()=>{const _0x2b0fa6=_0x21bec;state['stopCount']>0x2&&(state[_0x2b0fa6(0x72)]--,updateUI());}),document['getElementById']('increaseStops')['addEventListener'](_0x21bec(0x84),()=>{const _0x12e07f=_0x21bec;state[_0x12e07f(0x72)]<0x14&&(state[_0x12e07f(0x72)]++,updateUI());});const _0x20ce40={'lightnessGap':_0x20b38a=>state[_0x21bec(0x70)]=_0x20b38a,'lightnessDistribution':_0x3f816a=>state[_0x21bec(0x9b)]=_0x3f816a,'hueGap':_0x8a775=>state[_0x21bec(0x6d)]=_0x8a775,'hueDistribution':_0x48eca3=>state[_0x21bec(0xa9)]=_0x48eca3,'saturationGap':_0x54768f=>state[_0x21bec(0x87)]=_0x54768f,'saturationDistribution':_0x127ee2=>state[_0x21bec(0xa5)]=_0x127ee2};Object[_0x21bec(0xbf)](_0x20ce40)['forEach'](([_0x58c5fa,_0x35340c])=>{const _0x2a14f5=_0x21bec;document['getElementById'](_0x58c5fa)[_0x2a14f5(0xeb)](_0x2a14f5(0xf5),_0x315243=>{const _0x188529=_0x2a14f5;_0x35340c(parseFloat(_0x315243[_0x188529(0xe7)][_0x188529(0x78)])),updateUI();});}),document['querySelector'](_0x21bec(0xa0))[_0x21bec(0xeb)](_0x21bec(0x84),resetLightnessControls),document['querySelector'](_0x21bec(0xe8))[_0x21bec(0xeb)]('click',resetHueControls),document[_0x21bec(0x7f)](_0x21bec(0xb9))[_0x21bec(0xeb)]('click',resetSaturationControls),document[_0x21bec(0xf2)](_0x21bec(0xce))[_0x21bec(0xeb)](_0x21bec(0x84),resetAllControls),document[_0x21bec(0xf2)](_0x21bec(0x7d))[_0x21bec(0xeb)](_0x21bec(0xaa),_0x16a17f=>{const _0x1a16df=_0x21bec;state[_0x1a16df(0x7d)]=_0x16a17f[_0x1a16df(0xe7)][_0x1a16df(0xec)],updateUI();}),document[_0x21bec(0xf2)](_0x21bec(0xe6))[_0x21bec(0xeb)](_0x21bec(0xaa),_0x5b4408=>{const _0x1d7939=_0x21bec;state[_0x1d7939(0xe6)]=_0x5b4408[_0x1d7939(0xe7)]['checked'],updateUI();}),document[_0x21bec(0xf2)](_0x21bec(0xbe))[_0x21bec(0xeb)](_0x21bec(0xaa),updateUI);const _0x46df86=document[_0x21bec(0xf2)](_0x21bec(0xe5));_0x46df86&&_0x46df86[_0x21bec(0xeb)](_0x21bec(0x84),function(){const _0x304bad=_0x21bec,_0x22956e=this['getAttribute'](_0x304bad(0x96))===_0x304bad(0x80);updateToggleState(this,!_0x22956e);});const _0x5e7833=document[_0x21bec(0xf2)](_0x21bec(0xef));_0x5e7833&&_0x5e7833[_0x21bec(0xeb)](_0x21bec(0x84),function(){const _0x5a01b1=_0x21bec,_0x570b88=this[_0x5a01b1(0xcc)][_0x5a01b1(0x8e)]('selected');_0x570b88?(this[_0x5a01b1(0xcc)][_0x5a01b1(0x6c)]('selected'),this[_0x5a01b1(0xf9)][_0x5a01b1(0xa3)]=_0x5a01b1(0x7c),this[_0x5a01b1(0x7f)](_0x5a01b1(0xbb))[_0x5a01b1(0xf9)]['display']='none'):(this[_0x5a01b1(0xcc)][_0x5a01b1(0xd9)](_0x5a01b1(0xdc)),this[_0x5a01b1(0xf9)][_0x5a01b1(0xa3)]=getShade(0x32),this['querySelector']('.checkmark')[_0x5a01b1(0xf9)][_0x5a01b1(0xcf)]=_0x5a01b1(0xb0));});}document[_0x2f66dd(0xeb)]('DOMContentLoaded',()=>{setupEventListeners(),updateUI();});function _0x5a18(){const _0x35a42d=['value','\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22copy-overlay\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<svg\x20width=\x2220\x22\x20height=\x2220\x22\x20viewBox=\x220\x200\x2024\x2024\x22\x20fill=\x22none\x22\x20stroke=\x22white\x22\x20stroke-width=\x222\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<path\x20d=\x22M8\x2017.929H6c-1.105\x200-2-.912-2-2.036V5.036C4\x203.912\x204.895\x203\x206\x203h8c1.105\x200\x202\x20.912\x202\x202.036v1.866m-6\x20.17h8c1.105\x200\x202\x20.91\x202\x202.035v10.857C20\x2021.088\x2019.105\x2022\x2018\x2022h-8c-1.105\x200-2-.912-2-2.036V9.107c0-1.124.895-2.036\x202-2.036z\x22/>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</svg>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22shade-info\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22shade-number\x22>','saturation','luminance','transparent','lockBaseColor','setAttribute','querySelector','true','360azklrC','hue','</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22wcag-ratio\x22>','click','307467Sigiem','</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20','saturationGap','hex','round','black','toFixed','slice','from','contains','--chip-dark','.btn-secondary','getAttribute','--text-shadow-dark','setProperty','exampleAlert','textContent','aria-checked','.close-button\x20svg','30VObypq','<div\x20class=\x22meter-center\x22></div>','shades','lightnessDistribution','.alert-text','hsl(','forEach','--text-shadow-light','[data-reset=\x22lightness\x22]','#000000','4572066PxYaIa','backgroundColor','clipboard','saturationDistribution','6PNQtuO','disabled','meter-line','hueDistribution','change','.label-tag','\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22wcag-text\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22wcag-level\x22>','min','<div\x20class=\x22base-indicator\x22>Base</div>','942796KnuxxL','flex','46700CTgMyF','AAA','.helper-text','toString','stroke','40UVxTwM','svg','find','[data-reset=\x22saturation\x22]','borderColor','.checkmark','\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22wcag-overlay\x22\x20style=\x22color:\x20','innerHTML','colorFormat','entries','--card-bg-light','.btn','.plus-box','--card-text','</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20','createElement','className','inputColor','toUpperCase','62064OvHsOU','exampleMenuItem','%,\x20','classList','colorPicker','resetAllControls','display','rgb','join','651651fgZcQI','number','div','\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22shade\x20','pow','.kbd','left','add','\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22shade-color\x22\x20style=\x22background-color:\x20','.username','selected','913Vhdcvm','--card-bg-dark','lightness','exampleProgress','.toggle','color','decreaseStops','abs','exampleToggle','showWCAG','target','[data-reset=\x22hue\x22]','map','borderLeftColor','addEventListener','checked','parentElement','span','exampleSelectItem','isBaseColor','length','getElementById','--card-highlight','appendChild','input','\x27)\x22>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20','exampleCard','Meter','style','#FFFFFF','120130mjymex','test','.avatar','remove','hueGap','replace','increaseStops','lightnessGap','rgb(','stopCount','#68AED9','</div>\x0a\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20\x20<div\x20class=\x22shade-hex\x22>','max','.alert-title','colorInput'];_0x5a18=function(){return _0x35a42d;};return _0x5a18();}
-</script>
+        document.addEventListener('DOMContentLoaded', () => {
+            feather.replace();
+        });
+    </script>
+    <script src="script.js"></script>
 </body>
 </html>
