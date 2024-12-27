@@ -2244,8 +2244,8 @@ h1, h2, h3, h4, h5, h6 {
 [data-theme="dark"] {
     --card-border: var(--neutral-100);
     --card-bg: var(--neutral-100);
-    --primary-glow: var(--primary-800);
-    --accent-glow: var(--accent-800);
+    --primary-glow: var(--primary-400);
+    --accent-glow: var(--accent-400);
     --surface: #000000;
 
 }
@@ -2343,36 +2343,30 @@ h1, h2, h3, h4, h5, h6 {
     box-shadow: 0 10px 20px rgba(0, 0, 0, 0.05);
 }
 
-.pro-version-card::before,
-.pro-version-card::after {
+/* First gradient effect (green blob) */
+.pro-version-card::before {
     content: '';
     position: absolute;
-    border-radius: 50%;
-    opacity: 0.2;
-    filter: blur(100px);
+    inset: 0;
+    background: radial-gradient(
+        113% 88% at 50% -19%, 
+        var(--primary-glow) 0%, 
+        transparent 70%
+    );
+    opacity: 77%;
     z-index: -1;
 }
 
-.pro-version-card::before {
-    width: 300px;
-    height: 300px;
-    top: -100px;
-    left: -100px;
-    background: radial-gradient(
-        circle at center, 
-        var(--primary-glow) 70%,
-        transparent 9%
-    );
-}
-
+/* Second gradient effect (yellow blob) */
 .pro-version-card::after {
-    width: 250px;
-    height: 250px;
-    bottom: -100px;
-    right: -100px;
+    content: '';
+    position: absolute;
+    inset: 0;
     background: radial-gradient(
-        circle at center, 
-        var(--accent-glow) 70%,
-        transparent 9%
+        100% 69% at -17% 5%, 
+        var(--accent-glow) 0%, 
+        transparent 70%
     );
+    opacity: 80%;
+    z-index: -1;
 }
